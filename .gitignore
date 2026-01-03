@@ -23,3 +23,19 @@ mikrus_wiki_*/
 .cursor/rules/
 .cursorrules
 
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Logs
+*.log
+

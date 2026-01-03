@@ -4,25 +4,26 @@
 
 [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
 [![No Dependencies](https://img.shields.io/badge/dependencies-none-green.svg)](https://github.com)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 🚀 Quick Start
 
 ```bash
 # Download and run in one command
-curl -sSL https://raw.githubusercontent.com/USER/REPO/main/update_mikrus_rules.py | python3
+curl -sSL https://raw.githubusercontent.com/yeahneck/mikrus-auto-cursor-rules/main/update_mikrus_rules.py | python3
 ```
 
-Or download first:
+Or clone and run:
 
 ```bash
-curl -O https://raw.githubusercontent.com/USER/REPO/main/update_mikrus_rules.py
+git clone https://github.com/yeahneck/mikrus-auto-cursor-rules.git
+cd mikrus-auto-cursor-rules
 python3 update_mikrus_rules.py
 ```
 
 ## ✨ Features
 
-- ✅ **One Command Install** - Get all 46 wiki pages as Cursor rules instantly
+- ✅ **One Command Install** - Get all 46+ wiki pages as Cursor rules instantly
 - ✅ **Auto-Detects Workspace** - Works from any directory in your project
 - ✅ **Smart Updates** - Only downloads when wiki content changes
 - ✅ **Zero Dependencies** - Pure Python standard library
@@ -40,7 +41,7 @@ python3 update_mikrus_rules.py
 ## 📁 Output
 
 Creates **47 files** in `.cursor/rules/` directory:
-- 46 individual wiki pages (e.g., `Apache_PHP_MySQL.mdc`, `nginx_publikacja_prostej_strony.mdc`)
+- 46+ individual wiki pages (e.g., `Apache_PHP_MySQL.mdc`, `nginx_publikacja_prostej_strony.mdc`)
 - 1 index file (`00_mikrus_wiki_index.mdc`)
 
 Total size: ~110 KB
@@ -109,7 +110,7 @@ your-project/
 │       ├── 00_mikrus_wiki_index.mdc
 │       ├── Apache_PHP_MySQL.mdc
 │       ├── nginx_publikacja_prostej_strony.mdc
-│       └── ... (44 more files)
+│       └── ... (44+ more files)
 └── .mikrus_rules_update.json
 ```
 
@@ -144,7 +145,7 @@ Found a bug or have a suggestion? Open an issue or submit a PR!
 
 ## 📄 License
 
-This script is provided as-is for the Mikrus community. Feel free to use and modify.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Credits
 
