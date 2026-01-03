@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-Extract Mikrus wiki content from GitHub and create .cursorrules file.
-Only keeps the .cursorrules file, not the full repository.
+Mikrus Wiki → Cursor Rules Installer
+
+Extract Mikrus wiki content from GitHub and create Cursor .mdc rule files.
+Only keeps the .mdc files, not the full repository.
+
+Usage:
+    python3 update_mikrus_rules.py          # Check and update if needed
+    python3 update_mikrus_rules.py --force  # Force update
+    python3 update_mikrus_rules.py --help   # Show help
+    python3 update_mikrus_rules.py --version # Show version
+
+Version: 1.0.0
 """
 import os
 import subprocess
@@ -13,10 +23,36 @@ import json
 from datetime import datetime
 import urllib.request
 import zipfile
+import sys
 
+VERSION = "1.0.0"
 REPO_URL = "https://github.com/Mrugalski-pl/mikrus-dokumentacja.git"
-CURSOR_RULES_DIR = ".cursor/rules"
 UPDATE_CHECK_FILE = ".mikrus_rules_update.json"
+
+def find_workspace_root():
+    """Find workspace root by looking for .git, .cursor, or common project files"""
+    current = os.path.abspath(os.getcwd())
+    original = current
+    
+    # Check current directory first
+    if os.path.exists(os.path.join(current, '.cursor')):
+        return current
+    
+    # Walk up the directory tree
+    while current != os.path.dirname(current):
+        # Check for common workspace markers
+        markers = ['.git', '.cursor', 'package.json', 'requirements.txt', 
+                   'Cargo.toml', 'go.mod', 'pom.xml', 'build.gradle']
+        if any(os.path.exists(os.path.join(current, marker)) for marker in markers):
+            return current
+        current = os.path.dirname(current)
+    
+    # Fallback: use current directory
+    return original
+
+def get_cursor_rules_dir(workspace_root):
+    """Get the Cursor rules directory path"""
+    return os.path.join(workspace_root, ".cursor", "rules")
 
 def get_latest_commit_hash(repo_url):
     """Get the latest commit hash from GitHub API"""
@@ -43,24 +79,26 @@ def get_latest_commit_hash(repo_url):
         # Silently fail - update check is optional
         return None
 
-def get_last_update_info():
+def get_last_update_info(workspace_root):
     """Get last update information from local file"""
-    if os.path.exists(UPDATE_CHECK_FILE):
+    update_file = os.path.join(workspace_root, UPDATE_CHECK_FILE)
+    if os.path.exists(update_file):
         try:
-            with open(UPDATE_CHECK_FILE, 'r', encoding='utf-8') as f:
+            with open(update_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception:
             pass
     return None
 
-def save_update_info(commit_hash, timestamp):
+def save_update_info(workspace_root, commit_hash, timestamp):
     """Save update information to local file"""
+    update_file = os.path.join(workspace_root, UPDATE_CHECK_FILE)
     info = {
         'last_commit': commit_hash,
         'last_update': timestamp,
         'repo_url': REPO_URL
     }
-    with open(UPDATE_CHECK_FILE, 'w', encoding='utf-8') as f:
+    with open(update_file, 'w', encoding='utf-8') as f:
         json.dump(info, f, indent=2)
 
 def download_repo_zip():
@@ -287,17 +325,18 @@ file: "{path}"
     
     return mdc_path, mdc_content
 
-def create_cursor_rules(md_files_data):
+def create_cursor_rules(md_files_data, workspace_root):
     """Create .mdc files in .cursor/rules/ directory"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor_rules_dir = get_cursor_rules_dir(workspace_root)
     
     # Create rules directory
-    os.makedirs(CURSOR_RULES_DIR, exist_ok=True)
+    os.makedirs(cursor_rules_dir, exist_ok=True)
     
     created_files = []
     
     for file_data in md_files_data:
-        result = create_mdc_file(file_data, CURSOR_RULES_DIR)
+        result = create_mdc_file(file_data, cursor_rules_dir)
         if result:
             mdc_path, mdc_content = result
             with open(mdc_path, 'w', encoding='utf-8') as f:
@@ -333,20 +372,55 @@ All content is extracted from the Markdown files in the repository's `/content` 
             safe_name = sanitize_filename(path)
             index_content += f"- **{title}** (`{safe_name}.mdc`)\n"
     
-    index_path = os.path.join(CURSOR_RULES_DIR, "00_mikrus_wiki_index.mdc")
+    index_path = os.path.join(cursor_rules_dir, "00_mikrus_wiki_index.mdc")
     with open(index_path, 'w', encoding='utf-8') as f:
         f.write(index_content)
     created_files.append(index_path)
     
     return created_files
 
+def show_help():
+    """Display help information"""
+    print(f"""
+Mikrus Wiki → Cursor Rules Installer v{VERSION}
+
+This script downloads the Mikrus wiki from GitHub and creates Cursor rule files
+in .cursor/rules/ directory for use in Cursor IDE.
+
+USAGE:
+    python3 update_mikrus_rules.py          Check and update if needed
+    python3 update_mikrus_rules.py --force Force update (ignore cache)
+    python3 update_mikrus_rules.py --help  Show this help message
+    python3 update_mikrus_rules.py --version Show version information
+
+FEATURES:
+    ✅ Downloads latest Mikrus wiki from GitHub
+    ✅ Creates individual .mdc rule files (one per wiki page)
+    ✅ Auto-checks for updates (compares commit hashes)
+    ✅ Works from any directory (auto-detects workspace)
+    ✅ Cleans up temporary files automatically
+    ✅ No dependencies (pure Python standard library)
+
+OUTPUT:
+    Creates .cursor/rules/*.mdc files in your workspace root directory.
+
+SOURCE:
+    Wiki: https://wiki.mikr.us
+    Repository: https://github.com/Mrugalski-pl/mikrus-dokumentacja
+""")
+
 def extract_and_create_rules(force_update=False):
     """Main function to extract content and create .cursorrules"""
+    workspace_root = find_workspace_root()
+    cursor_rules_dir = get_cursor_rules_dir(workspace_root)
+    
     print("🚀 Mikrus Wiki Rules Updater\n")
+    print(f"📁 Workspace: {workspace_root}")
+    print(f"📁 Rules directory: {cursor_rules_dir}\n")
     
     # Check for updates
     if not force_update:
-        last_info = get_last_update_info()
+        last_info = get_last_update_info(workspace_root)
         latest_commit = get_latest_commit_hash(REPO_URL)
         
         if last_info and latest_commit:
@@ -379,20 +453,21 @@ def extract_and_create_rules(force_update=False):
                 print(f"  ✓ {data['path']}")
         
         # Create .mdc files in .cursor/rules/
-        print(f"\n📝 Creating .mdc files in {CURSOR_RULES_DIR}/ from {len(md_files_data)} files...")
-        created_files = create_cursor_rules(md_files_data)
+        print(f"\n📝 Creating .mdc files in {cursor_rules_dir}/ from {len(md_files_data)} files...")
+        created_files = create_cursor_rules(md_files_data, workspace_root)
         
         # Save update info
         latest_commit = get_latest_commit_hash(REPO_URL)
         if latest_commit:
-            save_update_info(latest_commit, datetime.now().isoformat())
+            save_update_info(workspace_root, latest_commit, datetime.now().isoformat())
         
         total_size = sum(os.path.getsize(f) for f in created_files if os.path.exists(f))
         print(f"\n✅ Complete!")
-        print(f"📁 Rules directory: {CURSOR_RULES_DIR}/")
+        print(f"📁 Rules directory: {cursor_rules_dir}/")
         print(f"📄 Files created: {len(created_files)}")
         print(f"📊 Total size: {total_size:,} bytes ({total_size/1024:.1f} KB)")
         print(f"📚 Wiki pages included: {len(md_files_data)}")
+        print(f"\n💡 Tip: Restart Cursor IDE to see the rules in 'Project Rules'")
         
         return True
         
@@ -407,6 +482,15 @@ def extract_and_create_rules(force_update=False):
 def main():
     """Main entry point"""
     import sys
+    
+    # Handle command line arguments
+    if '--help' in sys.argv or '-h' in sys.argv:
+        show_help()
+        sys.exit(0)
+    
+    if '--version' in sys.argv or '-v' in sys.argv:
+        print(f"Mikrus Wiki → Cursor Rules Installer v{VERSION}")
+        sys.exit(0)
     
     force = '--force' in sys.argv or '-f' in sys.argv
     
