@@ -63,7 +63,7 @@ The server provides access to **51 Mikrus documentation pages**, including:
 
 Once connected, the AI assistant can use these tools:
 
-### `user-mikrus-search_mikrus_docs`
+### `search_mikrus_docs`
 Search through documentation by keyword or phrase.
 
 **Parameters:**
@@ -75,7 +75,7 @@ Search through documentation by keyword or phrase.
 Search for "nginx" in Mikrus docs
 ```
 
-### `user-mikrus-get_mikrus_stats`
+### `get_mikrus_stats`
 Get statistics about the documentation server.
 
 **Example:**
@@ -83,7 +83,7 @@ Get statistics about the documentation server.
 Show Mikrus documentation stats
 ```
 
-### `user-mikrus-list_mikrus_topics`
+### `list_mikrus_topics`
 List all available documentation topics/categories.
 
 **Example:**
