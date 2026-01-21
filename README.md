@@ -1,147 +1,172 @@
-# Mikrus Wiki → Cursor Rules Installer
+# Mikrus MCP Server
 
-**One command to get all Mikrus wiki documentation into your Cursor IDE as project rules.**
+**Remote MCP server providing access to complete Mikrus documentation (51 pages) for AI assistants.**
 
-[![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
-[![No Dependencies](https://img.shields.io/badge/dependencies-none-green.svg)](https://github.com)
+[![Live Server](https://img.shields.io/badge/status-online-brightgreen.svg)](https://srv47-40231.wykr.es/health)
+[![MCP Protocol](https://img.shields.io/badge/protocol-MCP-blue.svg)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## 🌐 Server URL
+
+```
+https://srv47-40231.wykr.es/sse
+```
 
 ## 🚀 Quick Start
 
-```bash
-# Download and run in one command
-curl -sSL https://raw.githubusercontent.com/yeahneck/mikrus-auto-cursor-rules/main/update_mikrus_rules.py | python3
+### Cursor IDE
+
+Add to your `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "mikrus": {
+      "url": "https://srv47-40231.wykr.es/sse"
+    }
+  }
+}
 ```
 
-Or clone and run:
+### Claude Desktop
 
-```bash
-git clone https://github.com/yeahneck/mikrus-auto-cursor-rules.git
-cd mikrus-auto-cursor-rules
-python3 update_mikrus_rules.py
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "mikrus": {
+      "url": "https://srv47-40231.wykr.es/sse"
+    }
+  }
+}
 ```
 
-## ✨ Features
-
-- ✅ **One Command Install** - Get all 46+ wiki pages as Cursor rules instantly
-- ✅ **Auto-Detects Workspace** - Works from any directory in your project
-- ✅ **Smart Updates** - Only downloads when wiki content changes
-- ✅ **Zero Dependencies** - Pure Python standard library
-- ✅ **Auto-Cleanup** - Removes temporary files automatically
-- ✅ **Cursor Native** - Creates proper `.mdc` files with YAML frontmatter
-
-## 📖 What It Does
-
-1. Downloads the latest Mikrus wiki from GitHub (`dev` branch)
-2. Extracts all Markdown files from the `content/` directory
-3. Creates individual `.mdc` rule files in `.cursor/rules/` (one per wiki page)
-4. Adds YAML frontmatter with descriptions for Cursor IDE
-5. Creates an index file for easy navigation
-
-## 📁 Output
-
-Creates **47 files** in `.cursor/rules/` directory:
-- 46+ individual wiki pages (e.g., `Apache_PHP_MySQL.mdc`, `nginx_publikacja_prostej_strony.mdc`)
-- 1 index file (`00_mikrus_wiki_index.mdc`)
-
-Total size: ~110 KB
-
-## 🎯 Usage
+### Test via CLI
 
 ```bash
-# Check and update if needed (default)
-python3 update_mikrus_rules.py
-
-# Force update (ignore cache)
-python3 update_mikrus_rules.py --force
-
-# Show help
-python3 update_mikrus_rules.py --help
-
-# Show version
-python3 update_mikrus_rules.py --version
+npx -y mcp-remote https://srv47-40231.wykr.es/sse
 ```
 
-## 🔧 Requirements
+## 📚 What's Available
 
-- **Python 3.6+** (uses only standard library - no pip install needed)
-- **Internet connection** (to download from GitHub)
-- **Write permissions** in your workspace directory
+The server provides access to **51 Mikrus documentation pages**, including:
 
-## 📝 After Installation
+- Server setup and configuration guides
+- Nginx, Apache, PHP, MySQL tutorials
+- Docker and PM2 guides
+- SSH, VPN, and networking guides
+- Troubleshooting and FAQ
+- And much more!
 
-1. **Restart Cursor IDE** to refresh rules
-2. Check **"Project Rules"** in Cursor settings
-3. All Mikrus wiki documentation is now available to Cursor's AI assistant!
+## 🛠️ Available Tools
 
-## 🔄 Updating
+Once connected, the AI assistant can use these tools:
 
-The script automatically checks for updates by comparing commit hashes. Just run it again:
+### `user-mikrus-search_mikrus_docs`
+Search through documentation by keyword or phrase.
+
+**Parameters:**
+- `query` (required): Search term
+- `limit` (optional): Max results (default: 10)
+
+**Example:**
+```
+Search for "nginx" in Mikrus docs
+```
+
+### `user-mikrus-get_mikrus_stats`
+Get statistics about the documentation server.
+
+**Example:**
+```
+Show Mikrus documentation stats
+```
+
+### `user-mikrus-list_mikrus_topics`
+List all available documentation topics/categories.
+
+**Example:**
+```
+List all Mikrus topics
+```
+
+## ✅ Verify Server Status
+
+Check if the server is running:
 
 ```bash
-python3 update_mikrus_rules.py
+# Health check
+curl https://srv47-40231.wykr.es/health
+
+# Expected response:
+# {"status":"healthy","version":"1.0.0","uptime":...,"docs":{"totalDocs":51,...}}
 ```
 
-It will only download if the wiki has been updated since your last run.
+## 🎯 Use Cases
 
-## 🛠️ How It Works
+- **Ask questions** about Mikrus VPS setup and configuration
+- **Search documentation** without leaving your IDE
+- **Get instant answers** about common issues and troubleshooting
+- **Learn** best practices for server administration
 
-### Workspace Detection
+## 📖 Example Queries
 
-The script automatically finds your workspace root by looking for:
-- `.cursor/` directory
-- `.git/` directory
-- Common project files (`package.json`, `requirements.txt`, `Cargo.toml`, etc.)
-
-If none found, it uses the current directory.
-
-### Update Checking
-
-- Compares latest commit hash from GitHub API
-- Stores last update info in `.mikrus_rules_update.json`
-- Only downloads if commit hash changed (or `--force` used)
-
-### File Structure
+Once connected, try asking your AI assistant:
 
 ```
-your-project/
-├── .cursor/
-│   └── rules/
-│       ├── 00_mikrus_wiki_index.mdc
-│       ├── Apache_PHP_MySQL.mdc
-│       ├── nginx_publikacja_prostej_strony.mdc
-│       └── ... (44+ more files)
-└── .mikrus_rules_update.json
+- "How do I set up Nginx on Mikrus?"
+- "Show me how to configure MySQL database"
+- "What are the available Linux distributions?"
+- "How do I connect to my Mikrus server via SSH?"
+- "Explain how IPv6 works on Mikrus"
 ```
+
+## 🔧 Technical Details
+
+- **Protocol**: Model Context Protocol (MCP) via Server-Sent Events (SSE)
+- **Transport**: HTTPS with automatic SSL/TLS
+- **Documentation**: 51 pages from [wiki.mikr.us](https://wiki.mikr.us)
+- **Auto-updates**: Documentation syncs automatically with the wiki
+- **Rate limiting**: Configured for fair use
+- **CORS**: Enabled for cross-origin requests
+
+## 🌍 Server Location
+
+- **Hosted on**: Mikrus VPS (srv47.mikr.us)
+- **Region**: Finland (Hetzner Helsinki)
+- **Uptime**: 24/7 (monitored)
 
 ## 🐛 Troubleshooting
 
-### Rules not showing in Cursor
+### Connection Failed
 
-1. **Restart Cursor IDE** after running the script
-2. Check that `.cursor/rules/` exists: `ls -la .cursor/rules/`
-3. Verify files were created: `ls -la .cursor/rules/*.mdc | wc -l` (should show 47)
+1. **Verify server is online**: `curl https://srv47-40231.wykr.es/health`
+2. **Check your internet connection**
+3. **Restart your IDE** after adding MCP configuration
+4. **Verify JSON syntax** in your MCP config file
 
-### "Operation not permitted" error
+### Tools Not Showing
 
-- On macOS, grant Terminal/IDE full disk access in System Preferences
-- Or run from your workspace root directory
+1. **Restart your IDE/application** after configuration
+2. **Check MCP logs** in your application
+3. **Verify the URL** is correct (must include `/sse` endpoint)
 
-### Network/SSL errors
+### SSL/Certificate Issues
 
-- The script handles SSL issues automatically
-- If problems persist, check your internet connection
-- Try running with `--force` flag
+The server uses CloudFlare SSL - if you encounter certificate errors:
+- Update your system's root certificates
+- Ensure your system clock is correct
 
 ## 📚 Source
 
-- **Wiki**: https://wiki.mikr.us
-- **Repository**: https://github.com/Mrugalski-pl/mikrus-dokumentacja
-- **Branch**: `dev`
+- **Mikrus Wiki**: https://wiki.mikr.us
+- **Documentation Repository**: https://github.com/Mrugalski-pl/mikrus-dokumentacja
+- **MCP Protocol**: https://modelcontextprotocol.io
 
 ## 🤝 Contributing
 
-Found a bug or have a suggestion? Open an issue or submit a PR!
+Questions or issues? Contact the Mikrus community or open an issue.
 
 ## 📄 License
 
@@ -149,11 +174,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Credits
 
-- **Mikrus Wiki** - https://wiki.mikr.us
-- **Mikrus Documentation Repository** - https://github.com/Mrugalski-pl/mikrus-dokumentacja
-- **Cursor IDE** - https://cursor.sh
+- **Mikrus Hosting** - https://mikr.us
+- **Model Context Protocol** - Anthropic
+- **Documentation Source** - Mikrus Community
 
 ---
 
 **Made for the Mikrus community** 🚀
+
+**Server Status**: [https://srv47-40231.wykr.es/health](https://srv47-40231.wykr.es/health)
 
