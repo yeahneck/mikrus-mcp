@@ -3,9 +3,10 @@
 
 echo "🔄 Updating Mikrus MCP Server..."
 
-# Pull latest code
+# Pull latest code from production branch
 cd /opt/mikrus-mcp-server
-git pull
+git checkout production
+git pull origin production
 
 # Rebuild
 echo "🏗️  Building..."
