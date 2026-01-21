@@ -12,9 +12,10 @@ git pull origin production
 echo "🏗️  Building..."
 npm run build
 
-# Restart with PM2
+# Restart with PM2 (update environment variables)
 echo "♻️  Restarting server..."
-PORT=40231 HOST='::' NODE_ENV=production pm2 restart mikrus-mcp-server
+pm2 delete mikrus-mcp-server 2>/dev/null || true
+PORT=40231 HOST='::' NODE_ENV=production pm2 start dist/server.js --name mikrus-mcp-server
 
 # Show status
 echo "✅ Done! Checking status..."
