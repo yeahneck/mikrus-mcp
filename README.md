@@ -21,8 +21,9 @@ Add to your `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "mikrus": {
-      "url": "https://srv47-40231.wykr.es/sse"
+     "mikrus-docs": {
+      "url": "https://srv47-40231.wykr.es/sse",
+      "headers": {}
     }
   }
 }
@@ -35,8 +36,9 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 ```json
 {
   "mcpServers": {
-    "mikrus": {
-      "url": "https://srv47-40231.wykr.es/sse"
+     "mikrus-docs": {
+      "url": "https://srv47-40231.wykr.es/sse",
+      "headers": {}
     }
   }
 }
