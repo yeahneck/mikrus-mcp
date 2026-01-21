@@ -1,0 +1,3 @@
+[submodule "mikrus-mcp-server"]
+	path = mikrus-mcp-server
+	url = https://github.com/yeahneck/mikrus-mcp-server.git
