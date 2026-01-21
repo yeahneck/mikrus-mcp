@@ -13,9 +13,17 @@ ssh root@srv47.mikr.us -p 10121
 ### Uruchom aktualizację:
 ```bash
 cd /opt/mikrus-mcp-server
+git checkout production
 git pull origin production
 npm run build
-pm2 restart mikrus-mcp-server
+pm2 delete mikrus-mcp-server
+PORT=40231 HOST='::' NODE_ENV=production pm2 start dist/server.js --name mikrus-mcp-server
+pm2 save
+```
+
+**LUB użyj skryptu:**
+```bash
+./UPDATE-SERVER.sh
 ```
 
 ### Sprawdź czy działa:
